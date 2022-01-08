@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MyMap</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://use.fontawesome.com/releases/v5.10.2/css/all.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>緯度・経度情報を取得してみよう<i class="fas fa-map-marked-alt"></i></h1>
+    <ul>
+      <li>Step1 取得したい位置をクリックしてピンを立てよう。</li>
+      <li>Step2 ピンをクリックすると吹き出しに座標情報が出てきます。</li>
+      <li>Step3 コピーして使用しましょう。</li>
+    </ul>
+    <div id="target"></div>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?language=ja&region=JP&key=&callback=initMap"
+      async
+      defer
+    ></script>
+    <script>
+      function initMap() {
+        "use strict";
+        var target = document.getElementById("target");
+        var map;
+        var tokyo = { lat: 35.669471237051184, lng: 139.70302908417335 }; //G's東京校
+
+        //表示の仕方
+        map = new google.maps.Map(target, {
+          center: tokyo, //中央にG's東京校
+          zoom: 16, //0〜18で選択
+          disableDefaultUI: true, //UI無効化
+          zoomControl: true, //zoomだけ残す
+          mapTypeId: "hybrid", //衛星写真+道路情報
+          clickableIcons: false, //アイコンクリックしても出ない
+        });
+
+        //クリックした位置にピンが立つ
+        map.addListener("click", function (e) {
+          var marker = new google.maps.Marker({
+            //ピンを立てる
+            position: e.latLng,
+            map: this, //クリックした場所
+            animation: google.maps.Animation.DROP, //上からストン
+          });
+          var infoWindow = new google.maps.InfoWindow({
+            //吹き出し
+            content: e.latLng.toString(), //経度緯度情報
+          });
+          marker.addListener("click", function () {
+            //クリックしたら
+            infoWindow.open(map, marker); //吹き出し+緯度経度が表示
+          });
+        });
+
+        //クリックした位置が中央に+緯度経度を取得
+        map.addListener("click", function (e) {
+          console.log(e.latLng.lat()); //緯度
+          console.log(e.latLng.lng()); //経度
+          console.log(e.latLng.toString());
+          // this.setCenter(e.latLng);
+          this.panTo(e.latLng); //クリックした箇所が中央に、ゆっくり動く(panTo)
+        });
+      }
+    </script>
+    <!-- jクエリを読み込む -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <!-- jsファイルを準備する ↓-->
+    <script src="test.js"></script>
+  </body>
+</html>
